@@ -1,0 +1,25 @@
+#to find managedEnvironmentId: az containerapp env show -g MyResourceGroup -n MyContainerappEnvironment --query id
+#to deploy using yaml file: az containerapp create --resource-group <ResourceGroupName> --name <ContainerAppName> --yaml docker-compose.multiappcontainer.yaml
+# https://github.com/azureossd/Container-Apps/tree/master/multicontainer/nodejs
+location: eastus 
+type: Microsoft.App/containerApps 
+properties: 
+  managedEnvironmentId: /subscriptions/a04d9e5a-266b-4f31-9f68-3be7077aa9f0/resourceGroups/testcontainerapp_rg/providers/Microsoft.App/managedEnvironments/managedEnvironment-testcontainerap-a8cc
+  configuration:
+    activeRevisionsMode: Multiple
+    ingress:
+      external: true
+      allowInsecure: false 
+      targetPort: 80
+  template:
+    containers:
+    - name: myblogfrontend
+      image: docker.io/yousefalhindawi/myblog:latest
+      env:
+      - name: APP_PORT
+        value: 80
+    - name: apinodejsbackend
+      image: docker.io/yousefalhindawi/api:latest
+      env:
+      - name: PORT
+        value: 4000

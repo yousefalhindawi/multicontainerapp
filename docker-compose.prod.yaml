@@ -1,0 +1,49 @@
+# Step 1: Building the Images
+# docker build -t your-dockerhub-username/api-image-name:latest ./api
+# docker build -t yousefalhindawi/api:latest ./api
+# docker build -t your-dockerhub-username/myblog-image-name:latest ./myblog
+# docker build -t yousefalhindawi/myblog:latest ./myblog
+# Step 2: Pushing the Images to Docker Hub
+# docker push your-dockerhub-username/api-image-name:latest
+# docker push your-dockerhub-username/myblog-image-name:latest
+# OR 
+# docker compose build OR docker-compose -f docker-compose.prod.yaml up --build
+# docker push your-dockerhub-username/api-image-name:latest
+# docker push your-dockerhub-username/myblog-image-name:latest
+
+version: "3.8"
+services:
+  api:
+    build:
+      context: ./api
+      target: production
+    # image: your-dockerhub-username/api-image-name:latest
+    container_name: api_c
+    restart: always
+    ports:
+      - "4000:4000"
+    # volumes:
+    #   - /app/node_modules
+    networks:
+      - production_network
+  myblog:
+    build:
+      context: ./myblog
+      target: production
+    # image: your-dockerhub-username/myblog-image-name:latest
+    container_name: myblog_c
+    depends_on:
+      - api
+    restart: always
+    ports:
+      - "3000:80"
+    environment:
+      - NODE_ENV=production
+    # volumes:
+    #   - /app/node_modules
+    networks:
+      - production_network
+
+networks:
+  production_network:
+    driver: bridge
